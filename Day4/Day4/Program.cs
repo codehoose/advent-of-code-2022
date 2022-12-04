@@ -22,10 +22,10 @@ namespace Day4
                 using (TextReader reader = new StreamReader(s))
                 {
                     string line;
-                    while((line = reader.ReadLine()) != null)
+                    while ((line = reader.ReadLine()) != null)
                     {
                         Range[] ranges = GetRanges(line);
-                        if (Contains(ranges[0], ranges[1]) || Contains(ranges[1], ranges[0]))
+                        if (Intersects(ranges[0], ranges[1]) || Intersects(ranges[1], ranges[0]))
                         {
                             count++;
                         }
@@ -33,7 +33,7 @@ namespace Day4
                 }
             }
 
-            Console.WriteLine($"There are {count} ranges that overlap");
+            Console.WriteLine($"There are {count} ranges that intersect");
             Console.ReadLine();
         }
 
@@ -56,6 +56,12 @@ namespace Day4
         static bool Contains(Range first, Range second)
         {
             return second.start >= first.start && second.end <= first.end;
+        }
+
+        static bool Intersects(Range first, Range second)
+        {
+            return (second.start >= first.start && second.start <= first.end) ||
+                   (second.end >= first.end && second.end <= first.end);
         }
     }
 
