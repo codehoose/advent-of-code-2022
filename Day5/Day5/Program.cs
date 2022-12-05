@@ -35,16 +35,22 @@ namespace Day5
                     Regex digitRegex = new Regex(@"\d+");
                     while ((line = reader.ReadLine()) != null)
                     {
+                        Stack<char> temp = new Stack<char>();
+
                         Instruction instruction = GetInstruction(digitRegex, line);
                         for (int n = 0; n < instruction.count; n++)
                         {
-                            char value = stacks[instruction.source - 1].Pop();
-                            stacks[instruction.destination - 1].Push(value);
+                            temp.Push(stacks[instruction.source - 1].Pop());
+                        }
+
+                        while (temp.Count > 0)
+                        {
+                            stacks[instruction.destination - 1].Push(temp.Pop());
                         }
                     }
 
                     string str = "";
-                    foreach(var stack in stacks)
+                    foreach (var stack in stacks)
                     {
                         str += stack.Peek();
                     }
