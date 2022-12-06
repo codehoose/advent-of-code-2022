@@ -12,15 +12,20 @@ namespace Day6
         static void Main(string[] args)
         {
             string input = File.ReadAllText("input.txt");
+            //Search(input, 4); // Day 6, part 1
+            Search(input, 14); //Day 6, part 2
+        }
 
-            for (int i = 0; i < input.Length; i++)
+        static void Search(string text, int packetSize)
+        {
+            for (int i = 0; i < text.Length; i++)
             {
-                int length = input.Length - i;
-                if (length < 4) break;
-                string testString = input.Substring(i, 4);
+                int length = text.Length - i;
+                if (length < packetSize) break;
+                string testString = text.Substring(i, packetSize);
                 if (IsUnique(testString))
                 {
-                    Console.WriteLine($"The first marker is at position {i + 4}");
+                    Console.WriteLine($"The first marker is at position {i + packetSize}");
                     Console.ReadLine();
                     break;
                 }
