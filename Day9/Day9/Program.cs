@@ -13,20 +13,21 @@ namespace Day9
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            List<Instruction> instructions = Deserialize("input2.txt");
-            List<Cell> headVisited = new List<Cell>();
-            Knot tail = new Knot();
+            List<Instruction> instructions = Deserialize("input3.txt");
+            List<Knot> tail = new List<Knot>();
+            Knot head = new Knot();
 
             // Part 1
-            Walk(instructions, headVisited, tail);
-            Console.WriteLine($"There were {tail.visited.Count} cell visited by the tail");
+            Walk(instructions, head, tail);
+            DrawWalk(tail[0].visited);
+            Console.WriteLine($"There were {tail[0].visited.Count} cell visited by the tail");
             Console.ReadLine();
         }
 
         private static void DrawWalk(List<Cell> cells)
         {
-            int maxX = cells.Select(c => c.x).Max() + 1;
-            int maxY = cells.Select(c => c.y).Max() + 1;
+            int maxX = 36; // cells.Select(c => c.x).Max() + 1;
+            int maxY = 36; // cells.Select(c => c.y).Max() + 1;
 
             char[] grid = new char[maxX * maxY];
             for (int x = 0; x < grid.Length; x++) grid[x] = '.';
@@ -39,9 +40,9 @@ namespace Day9
 
             string tmp = "";
 
-            for (int index = grid.Length - maxX; index >= 0; index-=maxX)
+            for (int index = grid.Length - maxX; index >= 0; index -= maxX)
             {
-                for( int n = 0; n < maxX; n++)
+                for (int n = 0; n < maxX; n++)
                 {
                     tmp += grid[n + index];
                 }
@@ -50,20 +51,28 @@ namespace Day9
             }
         }
 
-        private static void Walk(List<Instruction> instructions, List<Cell> headVisited, Knot tail)
+        private static void Walk(List<Instruction> instructions, Knot head, List<Knot> tail, int numKnots = 10)
         {
             Cell cell = new Cell { x = 0, y = 0 };
-            headVisited.Add(cell);
-            tail.current = cell;
-            tail.visited.Add(cell);
+            head.visited.Add(cell);
+
+            for (int i = 0; i < numKnots; i++)
+            {
+                Knot knot = new Knot();
+                knot.current = cell;
+                knot.visited.Add(cell);
+                tail.Add(knot);
+            }
+
+            tail.Add(head);
 
             foreach (var instruction in instructions)
             {
                 int dx = GetDXFor(instruction.direction);
                 int dy = GetDYFor(instruction.direction);
 
-                int x = headVisited[headVisited.Count - 1].x;
-                int y = headVisited[headVisited.Count - 1].y;
+                int x = head.X;
+                int y = head.Y;
 
                 //Console.WriteLine($"\r\n== {instruction} ==\r\n");
 
@@ -73,26 +82,35 @@ namespace Day9
                     y += dy;
 
                     Cell newCell = new Cell { x = x, y = y };
-                    headVisited.Add(newCell);
+                    head.visited.Add(newCell);
 
                     // Now check the current head cell from the current tail cell. If it's > 1 then
                     // move the tail towards the head.
-                    if (IsTooFarAway(headVisited[headVisited.Count - 1], tail.current))
+                    //MoveKnot(head, tail[tail.Count - 1]);
+                    for (int j = tail.Count - 1; j >= 1; j--)
                     {
-                        Cell previousHead = FindClosest(headVisited, tail.current);
-                        if (!tail.visited.Contains(previousHead))
-                        //if (tailVisited.FirstOrDefault(c => c.x == previousHead.x && c.y == previousHead.y) == null)
-                        {
-                            //tailVisited.Add(previousHead);
-                            tail.visited.Add(previousHead);
-                        }
-
-                        tail.current = previousHead;
+                        MoveKnot(tail[j], tail[j - 1]);
                     }
 
                     //DrawWalk(headVisited[headVisited.Count - 1], 'H', currentTail, 'T');
                     //Console.WriteLine();
                 }
+            }
+        }
+
+        private static void MoveKnot(Knot knot1, Knot knot2)
+        {
+            // Now check the current head cell from the current tail cell. If it's > 1 then
+            // move the tail towards the head.
+            if (IsTooFarAway(knot1.Top, knot2.current))
+            {
+                Cell previousHead = FindClosest(knot1.visited, knot2.current);
+                if (!knot2.visited.Contains(previousHead))
+                {
+                    knot2.visited.Add(previousHead);
+                }
+
+                knot2.current = previousHead;
             }
         }
 
@@ -125,7 +143,7 @@ namespace Day9
 
         static Cell FindClosest(List<Cell> headVisited, Cell currentTail)
         {
-            for (int i = headVisited.Count-1; i >=0; i--)
+            for (int i = headVisited.Count - 1; i >= 0; i--)
             {
                 if (!IsTooFarAway(headVisited[i], currentTail))
                 {
@@ -198,6 +216,18 @@ namespace Day9
     public class Knot
     {
         public Cell current;
+
         public List<Cell> visited = new List<Cell>();
+
+        public Cell Top => visited[visited.Count - 1];
+
+        public int X => visited[visited.Count - 1].x;
+
+        public int Y => visited[visited.Count - 1].y;
+
+        public override string ToString()
+        {
+            return $"Count: {visited.Count}, Top: {Top}";
+        }
     }
 }
