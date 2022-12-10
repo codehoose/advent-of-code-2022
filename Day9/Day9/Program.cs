@@ -13,13 +13,13 @@ namespace Day9
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            List<Instruction> instructions = Deserialize("input.txt");
+            List<Instruction> instructions = Deserialize("input2.txt");
             List<Cell> headVisited = new List<Cell>();
-            List<Cell> tailVisited = new List<Cell>();
+            Knot tail = new Knot();
 
             // Part 1
-            Walk(instructions, headVisited, tailVisited);
-            Console.WriteLine($"There were {tailVisited.Count} cell visited by the tail");
+            Walk(instructions, headVisited, tail);
+            Console.WriteLine($"There were {tail.visited.Count} cell visited by the tail");
             Console.ReadLine();
         }
 
@@ -47,20 +47,15 @@ namespace Day9
                 }
                 Console.WriteLine(tmp);
                 tmp = "";
-
             }
         }
 
-        private static void Walk(List<Instruction> instructions, List<Cell> headVisited, List<Cell> tailVisited)
+        private static void Walk(List<Instruction> instructions, List<Cell> headVisited, Knot tail)
         {
             Cell cell = new Cell { x = 0, y = 0 };
             headVisited.Add(cell);
-            tailVisited.Add(cell);
-            Cell currentTail = tailVisited[0];
-
-            //Console.WriteLine("== Initial State ==");
-            //DrawWalk(tailVisited[0], 'T', headVisited[0], 'H');
-            //Console.WriteLine();
+            tail.current = cell;
+            tail.visited.Add(cell);
 
             foreach (var instruction in instructions)
             {
@@ -70,7 +65,7 @@ namespace Day9
                 int x = headVisited[headVisited.Count - 1].x;
                 int y = headVisited[headVisited.Count - 1].y;
 
-                Console.WriteLine($"\r\n== {instruction} ==\r\n");
+                //Console.WriteLine($"\r\n== {instruction} ==\r\n");
 
                 for (int i = 0; i < instruction.steps; i++)
                 {
@@ -82,16 +77,17 @@ namespace Day9
 
                     // Now check the current head cell from the current tail cell. If it's > 1 then
                     // move the tail towards the head.
-                    if (IsTooFarAway(headVisited[headVisited.Count - 1], currentTail))
+                    if (IsTooFarAway(headVisited[headVisited.Count - 1], tail.current))
                     {
-                        Cell previousHead = FindClosest(headVisited, currentTail);
-                        if (!tailVisited.Contains(previousHead))
+                        Cell previousHead = FindClosest(headVisited, tail.current);
+                        if (!tail.visited.Contains(previousHead))
                         //if (tailVisited.FirstOrDefault(c => c.x == previousHead.x && c.y == previousHead.y) == null)
                         {
-                            tailVisited.Add(previousHead);
+                            //tailVisited.Add(previousHead);
+                            tail.visited.Add(previousHead);
                         }
 
-                        currentTail = previousHead;
+                        tail.current = previousHead;
                     }
 
                     //DrawWalk(headVisited[headVisited.Count - 1], 'H', currentTail, 'T');
@@ -197,5 +193,11 @@ namespace Day9
         {
             return $"{direction} {steps}";
         }
+    }
+
+    public class Knot
+    {
+        public Cell current;
+        public List<Cell> visited = new List<Cell>();
     }
 }
