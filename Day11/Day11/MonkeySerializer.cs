@@ -62,10 +62,6 @@ namespace Day11
             {
                 return (i) => i + value;
             }
-            else if (line.Contains("/"))
-            {
-                return (i) => i / value;
-            }
 
             return (i) => i;
         }

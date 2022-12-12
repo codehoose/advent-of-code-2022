@@ -23,6 +23,12 @@ namespace Day11
 
         public int Id => _id;
 
+        public int DoAll()
+        {
+            _inspected++;
+            return _test(_operation(InspectNext()));
+        }
+
         public void Inspect()
         {
             _current = _items[0];
@@ -36,7 +42,7 @@ namespace Day11
 
         public void Bored()
         {
-            _current /= 3;
+            _current = (int)Math.Floor(_current / 3f);
         }
 
         public int ChuckTo()
@@ -57,6 +63,13 @@ namespace Day11
             _items.AddRange(items);
             _operation = operation;
             _test = test;
+        }
+
+        private int InspectNext()
+        {
+            int temp = _items[0];
+            _items.RemoveAt(0);
+            return temp;
         }
     }
 }
