@@ -67,9 +67,11 @@ class Solution(object):
                 return False
             
             if lhChild != None and not isinstance(lhChild, Node) and rhChild != None and not isinstance(rhChild, Node):
-                isGood = lhChild <= rhChild
-                if isGood:
+                if lhChild < rhChild:
                     return True
+                elif rhChild < lhChild:
+                    return False
+
             else:
                 if not isinstance(lhChild, Node):
                     tempValue = lhChild
