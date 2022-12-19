@@ -61,8 +61,7 @@ class Solution(object):
             if (lhChild == None and rhChild != None):
                 # If the left list runs out of items first, it's in the right order
                 return True
-            
-            if (rhChild == None and lhChild != None):
+            elif (rhChild == None and lhChild != None):
                 # If the right list runs out of items before the left list, it's wrong
                 return False
             
@@ -71,7 +70,6 @@ class Solution(object):
                     return True
                 elif rhChild < lhChild:
                     return False
-
             else:
                 if not isinstance(lhChild, Node):
                     tempValue = lhChild
@@ -79,11 +77,11 @@ class Solution(object):
                     lhChild.children.append(tempValue)
                 if not isinstance(rhChild, Node):
                     value = rhChild
-                    rhChild = Node(Token(self.ARRAY))
+                    rhChild = Node(Token(self.DIGIT))
                     rhChild.children.append(value)                
 
                 if lhChild != None and rhChild != None:
-                    result = result and self.compareX(lhChild, rhChild)                    
+                    result = result and self.compareX(lhChild, rhChild)
 
         return result
 
@@ -168,9 +166,9 @@ class Solution(object):
                 pass
 
 if (__name__ == "__main__"):
-    input = open("input.txt", "r")
+    input = open("questioninput.txt", "r")
     lines = input.readlines()
-    count = (int)(len(lines)/3)
+    count = (int)(len(lines)/3) + 1
     total = 0
     for n in range(count):
         str1 = lines[n * 3]
